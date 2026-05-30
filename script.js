@@ -274,28 +274,103 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ─────────────────────────────────────────────────
-     9. HERO ENTRANCE
+     9. HERO ENTRANCE + SCROLL JOURNEY
   ───────────────────────────────────────────────── */
   function bootHero() {
-    /* Eyebrow row */
-    gsap.to('#heroEyebrow', { opacity: 1, y: 0, duration: .75, delay: .1, ease: 'power3.out' });
+    /* After loader clears: just the photo is visible.
+       Text is opacity:0 — it reveals via scroll journey below. */
 
-    /* Scramble the heading lines (Anime.js-driven via rAF) */
-    document.querySelectorAll('.hero-line').forEach((line, i) => {
-      setTimeout(() => scramble(line, 900), 280 + i * 190);
+    /* Scroll indicator pulses in after a short beat */
+    gsap.to('#scrollIndicator', { opacity: .5, duration: 1, delay: .8 });
+
+    /* Kick off scroll animations (includes hero journey) */
+    initScroll();
+
+    /* Start role cycling — runs independently */
+    setTimeout(startRoleCycle, 6000);
+  }
+
+  /* Hero scroll journey — fires at different scroll progress points
+     through the 270vh #hero section. Each step reveals content. */
+  function initHeroJourney() {
+    const heroEl = document.getElementById('hero');
+
+    /* 1. Photo slow zoom while pinned (whole journey) */
+    gsap.to('.hero-img', {
+      scale: 1.1,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroEl,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1.2,
+      },
     });
 
-    /* Bottom bar: role + buttons */
-    gsap.to('#heroBottom', { opacity: 1, y: 0, duration: .8, delay: 1.25, ease: 'power3.out' });
+    /* 2. Photo vignette deepens as you scroll (extra left-fade overlay via opacity) */
+    gsap.to('.hero-img-overlay', {
+      opacity: 1.4,   /* push the overlay darker */
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroEl,
+        start: 'top top',
+        end: '40% bottom',
+        scrub: 1,
+      },
+    });
 
-    /* Scroll indicator */
-    gsap.to('#scrollIndicator', { opacity: .5, duration: .8, delay: 1.8 });
+    /* 3. EYEBROW chip reveals at ~10% scroll through the hero */
+    gsap.to('#heroEyebrow', {
+      opacity: 1, y: 0, duration: .001,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroEl,
+        start: '8% top',
+        end: '14% top',
+        scrub: false,
+        once: true,
+        onEnter: () => {
+          gsap.to('#heroEyebrow', { opacity: 1, y: 0, duration: .7, ease: 'power3.out' });
+        },
+      },
+    });
 
-    /* Start role cycling after heading settles */
-    setTimeout(startRoleCycle, 2800);
+    /* 4. HEADING scrambles in at ~18% */
+    ScrollTrigger.create({
+      trigger: heroEl,
+      start: '15% top',
+      once: true,
+      onEnter: () => {
+        gsap.to('#heroHeading', { opacity: 1, y: 0, duration: .5, ease: 'power2.out' });
+        document.querySelectorAll('.hero-line').forEach((line, i) => {
+          setTimeout(() => scramble(line, 950), i * 200);
+        });
+      },
+    });
 
-    /* Kick off all scroll animations */
-    initScroll();
+    /* 5. BOTTOM BAR (role + CTAs) at ~32% */
+    ScrollTrigger.create({
+      trigger: heroEl,
+      start: '28% top',
+      once: true,
+      onEnter: () => {
+        gsap.to('#heroBottom', { opacity: 1, y: 0, duration: .75, ease: 'power3.out' });
+        setTimeout(startRoleCycle, 2000);
+      },
+    });
+
+    /* 6. As hero exits (70-100%): content fades up and out */
+    gsap.to('.hero-content', {
+      opacity: 0,
+      y: -40,
+      ease: 'power2.in',
+      scrollTrigger: {
+        trigger: heroEl,
+        start: '68% top',
+        end: '88% top',
+        scrub: 1,
+      },
+    });
   }
 
   /* ─────────────────────────────────────────────────
@@ -303,16 +378,13 @@ document.addEventListener('DOMContentLoaded', () => {
   ───────────────────────────────────────────────── */
   function initScroll() {
 
+    /* Hero scroll journey — must run first */
+    initHeroJourney();
+
     /* Navbar state on scroll */
     ScrollTrigger.create({
       start: 'top -80',
       onUpdate: s => document.getElementById('navbar').classList.toggle('scrolled', s.progress > 0),
-    });
-
-    /* Hero image parallax */
-    gsap.to('#heroImage', {
-      yPercent: 22, ease: 'none',
-      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true },
     });
 
     /* Section label clip-path wipes */

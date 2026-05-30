@@ -59,56 +59,58 @@
   </nav>
 
   <!-- ═══════════════ HERO ═══════════════ -->
+  <!-- Tall section — sticky inner creates the scroll journey -->
   <section id="hero">
-    <canvas id="hero-canvas"></canvas>
-    <div class="hero-orb orb-1"></div>
-    <div class="hero-orb orb-2"></div>
+    <div class="hero-sticky">
+      <canvas id="hero-canvas"></canvas>
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
 
-    <div class="hero-image-wrap" id="heroImage">
-      <img
-        src="photo.jpg"
-        alt="Aeshvarya Awasthi"
-        class="hero-img"
-        onerror="this.style.display='none'; this.parentElement.classList.add('no-photo')"
-      >
-      <div class="hero-img-overlay"></div>
-    </div>
-
-    <div class="hero-content">
-
-      <!-- Eyebrow row -->
-      <div class="hero-eyebrow" id="heroEyebrow">
-        <div class="hero-chip">
-          <span class="chip-dot"></span>OPEN TO WORK
-        </div>
-        <div class="hero-index">01 / INTRO</div>
+      <!-- Full-screen portrait -->
+      <div class="hero-image-wrap" id="heroImage">
+        <img
+          src="photo.jpg"
+          alt="Aeshvarya Awasthi"
+          class="hero-img"
+          onerror="this.style.display='none'; this.parentElement.classList.add('no-photo')"
+        >
+        <div class="hero-img-overlay"></div>
       </div>
 
-      <!-- Big heading — scramble animates these -->
-      <h1 class="hero-heading">
-        <span class="hero-line">AESHVARYA</span>
-        <span class="hero-line italic">AWASTHI.</span>
-      </h1>
+      <!-- Text — hidden on load, scroll-reveals bit by bit -->
+      <div class="hero-content">
 
-      <!-- Bottom row: cycling role + CTA buttons -->
-      <div class="hero-bottom" id="heroBottom">
-        <div class="hero-role-wrap">
-          <span class="hero-role-label">CURRENTLY</span>
-          <span class="hero-role" id="heroRole">AI Engineer</span>
+        <div class="hero-eyebrow" id="heroEyebrow">
+          <div class="hero-chip">
+            <span class="chip-dot"></span>OPEN TO WORK
+          </div>
+          <div class="hero-index">01 / INTRO</div>
         </div>
-        <div class="hero-actions">
-          <a href="#projects" class="btn-primary magnetic-btn">
-            <span>VIEW WORK</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-          <a href="#contact" class="btn-ghost">LET'S TALK</a>
+
+        <h1 class="hero-heading" id="heroHeading">
+          <span class="hero-line">AESHVARYA</span>
+          <span class="hero-line italic">AWASTHI.</span>
+        </h1>
+
+        <div class="hero-bottom" id="heroBottom">
+          <div class="hero-role-wrap">
+            <span class="hero-role-label">CURRENTLY</span>
+            <span class="hero-role" id="heroRole">AI Engineer</span>
+          </div>
+          <div class="hero-actions">
+            <a href="#projects" class="btn-primary magnetic-btn">
+              <span>VIEW WORK</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#contact" class="btn-ghost">LET'S TALK</a>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="scroll-indicator" id="scrollIndicator">
-      <span>SCROLL</span>
-      <div class="scroll-line"><div class="scroll-dot"></div></div>
+      <div class="scroll-indicator" id="scrollIndicator">
+        <span>SCROLL</span>
+        <div class="scroll-line"><div class="scroll-dot"></div></div>
+      </div>
     </div>
   </section>
 
