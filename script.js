@@ -3,6 +3,11 @@
    Three.js · GSAP ScrollTrigger · Anime.js · Lenis
 ═══════════════════════════════════════════════════ */
 
+/* Disable browser scroll restoration — prevents video seeking to wrong
+   frame when page is refreshed mid-scroll */
+history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
 document.addEventListener('DOMContentLoaded', () => {
 
   /* ─────────────────────────────────────────────────
@@ -21,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(time => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
+
+  /* Force Lenis internal scroll state to 0 — in case browser restored
+     scroll position before Lenis initialised */
+  lenis.scrollTo(0, { immediate: true });
 
   /* ─────────────────────────────────────────────────
      3. CINEMATIC VIDEO — pause on load, scroll scrubs it
@@ -274,10 +283,21 @@ document.addEventListener('DOMContentLoaded', () => {
     /* Hero scroll journey — must run first */
     initHeroJourney();
 
-    /* Navbar state on scroll */
+    /* Navbar appears only after the hero section is fully scrolled past */
+    let navAnimated = false;
     ScrollTrigger.create({
-      start: 'top -80',
-      onUpdate: s => document.getElementById('navbar').classList.toggle('scrolled', s.progress > 0),
+      trigger: '#hero',
+      start: 'bottom top',
+      onEnter() {
+        document.getElementById('navbar').classList.add('scrolled');
+        if (!navAnimated) {
+          navAnimated = true;
+          gsap.from('.nav-wordmark', { x: -18, opacity: 0, duration: .7, ease: 'power3.out', delay: .15 });
+          gsap.from('.nav-link',     { y: -10, opacity: 0, duration: .5, stagger: .08, ease: 'power3.out', delay: .25 });
+          gsap.from('.nav-cta',      { scale: .88, opacity: 0, duration: .55, ease: 'back.out(2)', delay: .55 });
+        }
+      },
+      onLeaveBack: () => document.getElementById('navbar').classList.remove('scrolled'),
     });
 
     /* Section label clip-path wipes */
