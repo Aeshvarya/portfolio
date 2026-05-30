@@ -23,121 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
   gsap.ticker.lagSmoothing(0);
 
   /* ─────────────────────────────────────────────────
-     3. THREE.JS — GALAXY PARTICLE SYSTEM
+     3. CINEMATIC VIDEO — pause on load, scroll scrubs it
   ───────────────────────────────────────────────── */
-  const canvas   = document.getElementById('hero-canvas');
-  const scene    = new THREE.Scene();
-  const camera   = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 100);
-  camera.position.set(0, 2, 9);
-
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-
-  const COUNT = 5500, BRANCHES = 3, RADIUS = 7.5, SPIN = 1.2, RANDOM = 0.26, RND_POW = 3;
-
-  const positions = new Float32Array(COUNT * 3);
-  const aColors   = new Float32Array(COUNT * 3);
-  const aSizes    = new Float32Array(COUNT);
-
-  const innerCol = new THREE.Color('#00e5ff');
-  const outerCol = new THREE.Color('#7c6ef0');
-
-  function rnd(scale, power) {
-    return Math.pow(Math.random(), power) * (Math.random() < .5 ? 1 : -1) * scale;
+  const cinVideo = document.getElementById('cin-video');
+  if (cinVideo) {
+    cinVideo.pause();
+    cinVideo.currentTime = 0;
   }
-
-  for (let i = 0; i < COUNT; i++) {
-    const i3 = i * 3;
-    const r = Math.random() * RADIUS;
-    const spin = r * SPIN;
-    const arm = ((i % BRANCHES) / BRANCHES) * Math.PI * 2;
-
-    positions[i3]     = Math.cos(arm + spin) * r + rnd(RANDOM * r, RND_POW);
-    positions[i3 + 1] = rnd(RANDOM * r * 0.4, RND_POW);
-    positions[i3 + 2] = Math.sin(arm + spin) * r + rnd(RANDOM * r, RND_POW);
-
-    const mix = innerCol.clone().lerp(outerCol, r / RADIUS);
-    aColors[i3] = mix.r; aColors[i3+1] = mix.g; aColors[i3+2] = mix.b;
-    aSizes[i] = Math.random() * 2.2 + 0.4;
-  }
-
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geo.setAttribute('aColor',   new THREE.BufferAttribute(aColors, 3));
-  geo.setAttribute('aSize',    new THREE.BufferAttribute(aSizes, 1));
-
-  const mat = new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    vertexShader: `
-      attribute vec3  aColor;
-      attribute float aSize;
-      varying vec3 vColor;
-      void main() {
-        vColor = aColor;
-        vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = aSize * (200.0 / -mvPos.z);
-        gl_Position  = projectionMatrix * mvPos;
-      }
-    `,
-    fragmentShader: `
-      varying vec3 vColor;
-      void main() {
-        float d = length(gl_PointCoord - .5);
-        if (d > .5) discard;
-        float s = pow(smoothstep(.5, 0., d), 1.6);
-        gl_FragColor = vec4(vColor, s);
-      }
-    `,
-  });
-
-  const galaxy = new THREE.Points(geo, mat);
-  scene.add(galaxy);
-
-  const icoMesh = new THREE.Mesh(
-    new THREE.IcosahedronGeometry(1.3, 1),
-    new THREE.MeshBasicMaterial({ color:0x00e5ff, wireframe:true, transparent:true, opacity:0.11 })
-  );
-  icoMesh.position.set(3, 0.5, 0);
-  scene.add(icoMesh);
-
-  const torusMesh = new THREE.Mesh(
-    new THREE.TorusGeometry(1.8, 0.02, 16, 80),
-    new THREE.MeshBasicMaterial({ color:0x7c6ef0, transparent:true, opacity:0.15 })
-  );
-  torusMesh.position.set(-3.5, 1, -1);
-  torusMesh.rotation.x = Math.PI / 3;
-  scene.add(torusMesh);
-
-  let mxTarget = 0, myTarget = 0, mx = 0, my = 0;
-  document.addEventListener('mousemove', e => {
-    mxTarget =  (e.clientX / innerWidth  - 0.5) * 2;
-    myTarget = -(e.clientY / innerHeight - 0.5) * 2;
-  });
-
-  const clock3 = new THREE.Clock();
-  function threeLoop() {
-    requestAnimationFrame(threeLoop);
-    const t = clock3.getElapsedTime();
-    mx += (mxTarget - mx) * 0.04;
-    my += (myTarget - my) * 0.04;
-
-    galaxy.rotation.y = t * 0.045;
-    galaxy.rotation.x = my * 0.07;
-    icoMesh.rotation.x = t * 0.28;
-    icoMesh.rotation.y = t * 0.44;
-    icoMesh.position.y = 0.5 + Math.sin(t * 0.5) * 0.35;
-    torusMesh.rotation.z = t * 0.11;
-    torusMesh.rotation.x = Math.PI / 3 + my * 0.1;
-
-    camera.position.x += (mx * 0.4  - camera.position.x) * 0.04;
-    camera.position.y += (my * 0.22 - camera.position.y) * 0.04;
-    camera.lookAt(scene.position);
-
-    renderer.render(scene, camera);
-  }
-  threeLoop();
 
   /* ─────────────────────────────────────────────────
      4. MOUSE BLOB
@@ -293,90 +185,46 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Hero scroll journey — fires at different scroll progress points
      through the 270vh #hero section. Each step reveals content. */
   function initHeroJourney() {
-    const heroEl = document.getElementById('hero');
+    const heroEl  = document.getElementById('hero');
+    const video   = document.getElementById('cin-video');
+    const progBar = document.getElementById('cinProgress');
+    const DURATION = 30.667; /* actual video duration in seconds */
 
-    /* 0a. Eyes scene: zoom in slightly as it fades — "camera pulling back" */
-    gsap.to('.hero-eyes-img', {
-      scale: 1.14,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroEl,
-        start: 'top top',
-        end: '40% top',
-        scrub: 1.6,
-      },
-    });
-
-    /* 0b. Eyes scene: fade out as you scroll */
-    gsap.to('#heroEyesScene', {
-      opacity: 0,
-      ease: 'power2.in',
-      scrollTrigger: {
-        trigger: heroEl,
-        start: '8% top',
-        end: '40% top',
-        scrub: 1.3,
-      },
-    });
-
-    /* 0c. Character: fades in as eyes fade out */
-    gsap.to('#heroImage', {
-      opacity: 1,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: heroEl,
-        start: '22% top',
-        end: '48% top',
-        scrub: 1.3,
-      },
-    });
-
-    /* 1. Photo slow zoom while pinned (whole journey) */
-    gsap.to('.hero-img', {
-      scale: 1.1,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroEl,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1.2,
-      },
-    });
-
-    /* 2. Photo vignette deepens as you scroll (extra left-fade overlay via opacity) */
-    gsap.to('.hero-img-overlay', {
-      opacity: 1.4,   /* push the overlay darker */
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroEl,
-        start: 'top top',
-        end: '40% bottom',
-        scrub: 1,
-      },
-    });
-
-    /* 3. EYEBROW chip reveals at ~10% scroll through the hero */
-    gsap.to('#heroEyebrow', {
-      opacity: 1, y: 0, duration: .001,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroEl,
-        start: '8% top',
-        end: '14% top',
-        scrub: false,
-        once: true,
-        onEnter: () => {
-          gsap.to('#heroEyebrow', { opacity: 1, y: 0, duration: .7, ease: 'power3.out' });
-        },
-      },
-    });
-
-    /* 4. HEADING scrambles in at ~18% */
+    /* ── Scroll → video currentTime (scrub) ── */
     ScrollTrigger.create({
       trigger: heroEl,
-      start: '15% top',
-      once: true,
-      onEnter: () => {
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate(self) {
+        if (!video) return;
+        const target = self.progress * DURATION;
+        /* Only seek if we're more than 1 frame off — avoids micro-stutter */
+        if (Math.abs(video.currentTime - target) > 0.05) {
+          video.currentTime = target;
+        }
+        if (progBar) progBar.style.width = (self.progress * 100) + '%';
+      },
+    });
+
+    /* ── Scene timestamps (% of 500vh hero) ── */
+    /* 0 %  → 0s    Scene 1: Eyes                  */
+    /* 16%  → 5s    Scene 2: Head & Shoulders       */
+    /* 32%  → 10s   Scene 3: Half Body + Holograms  */
+    /* 52%  → 16s   Scene 4: Full Environment        */
+    /* 72%  → ~22s  Final hero moment               */
+
+    /* Eyebrow chip — 6% into hero scroll */
+    ScrollTrigger.create({
+      trigger: heroEl, start: '6% top', once: true,
+      onEnter() {
+        gsap.to('#heroEyebrow', { opacity: 1, y: 0, duration: .7, ease: 'power3.out' });
+      },
+    });
+
+    /* Heading scrambles in — 14% */
+    ScrollTrigger.create({
+      trigger: heroEl, start: '14% top', once: true,
+      onEnter() {
         gsap.to('#heroHeading', { opacity: 1, y: 0, duration: .5, ease: 'power2.out' });
         document.querySelectorAll('.hero-line').forEach((line, i) => {
           setTimeout(() => scramble(line, 950), i * 200);
@@ -384,26 +232,23 @@ document.addEventListener('DOMContentLoaded', () => {
       },
     });
 
-    /* 5. BOTTOM BAR (role + CTAs) at ~32% */
+    /* Bottom bar (role + CTAs) — 26% */
     ScrollTrigger.create({
-      trigger: heroEl,
-      start: '28% top',
-      once: true,
-      onEnter: () => {
+      trigger: heroEl, start: '24% top', once: true,
+      onEnter() {
         gsap.to('#heroBottom', { opacity: 1, y: 0, duration: .75, ease: 'power3.out' });
         setTimeout(startRoleCycle, 2000);
       },
     });
 
-    /* 6. As hero exits (70-100%): content fades up and out */
-    gsap.to('.hero-content', {
-      opacity: 0,
-      y: -40,
+    /* Text fades out as final hero moment plays (72–86%) */
+    gsap.to('.cin-text', {
+      opacity: 0, y: -35,
       ease: 'power2.in',
       scrollTrigger: {
         trigger: heroEl,
-        start: '68% top',
-        end: '88% top',
+        start: '70% top',
+        end: '86% top',
         scrub: 1,
       },
     });
@@ -561,10 +406,6 @@ document.addEventListener('DOMContentLoaded', () => {
      14. RESIZE
   ───────────────────────────────────────────────── */
   window.addEventListener('resize', () => {
-    camera.aspect = innerWidth / innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     ScrollTrigger.refresh();
   });
 
