@@ -190,14 +190,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const progBar = document.getElementById('cinProgress');
     const DURATION = 30.667; /* actual video duration in seconds */
 
-    /* ── RAF loop reads lenis.targetScroll (raw, no smooth lag) ── */
-    const heroScrollLen = heroEl.offsetHeight - window.innerHeight;
+    /* ── RAF loop: reads lenis.targetScroll (raw, no smooth lag) ── */
+    /* heroScrollLen computed lazily so layout is settled before first read */
+    let heroScrollLen = 0;
 
     (function videoScrubLoop() {
       requestAnimationFrame(videoScrubLoop);
-      if (!video || !heroScrollLen) return;
+      if (!video) return;
 
-      /* lenis.targetScroll is the user's intended position, no easing delay */
+      /* Ensure video never auto-plays — we control it entirely via seek */
+      if (!video.paused) video.pause();
+
+      /* Lazy init after layout is ready */
+      if (!heroScrollLen) {
+        heroScrollLen = heroEl.offsetHeight - window.innerHeight;
+        if (!heroScrollLen) return;
+      }
+
+      /* lenis.targetScroll = raw user intent, no easing delay */
       const rawProgress = Math.max(0, Math.min(1, lenis.targetScroll / heroScrollLen));
       const target = rawProgress * DURATION;
 
