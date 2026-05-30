@@ -66,10 +66,16 @@
       <div class="hero-orb orb-1"></div>
       <div class="hero-orb orb-2"></div>
 
-      <!-- Full-screen portrait -->
+      <!-- Eyes close-up — first cinematic frame, fades on scroll -->
+      <div class="hero-eyes-scene" id="heroEyesScene">
+        <img src="eyes.png" alt="" class="hero-eyes-img">
+        <div class="hero-eyes-veil"></div>
+      </div>
+
+      <!-- Full-screen portrait — fades in as eyes fade out -->
       <div class="hero-image-wrap" id="heroImage">
         <img
-          src="photo.jpg"
+          src="hero.png"
           alt="Aeshvarya Awasthi"
           class="hero-img"
           onerror="this.style.display='none'; this.parentElement.classList.add('no-photo')"
@@ -183,7 +189,7 @@
             data-tilt data-tilt-max="8" data-tilt-speed="400"
             data-tilt-glare data-tilt-max-glare="0.15">
             <div class="about-img-bg"></div>
-            <img src="photo.jpg" alt="Aeshvarya" class="about-img" onerror="this.style.display='none'">
+            <img src="shoulders.png" alt="Aeshvarya" class="about-img" onerror="this.style.display='none'">
           </div>
         </div>
         <div class="about-tag tag-1"><span>🎓</span> IIT Jodhpur</div>
@@ -329,6 +335,14 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FINALE — MOVIE POSTER ═══════════════ -->
+  <section id="finale">
+    <div class="finale-sticky">
+      <img src="final.png" alt="Aeshvarya Awasthi — Developer, Creator, IIT Jodhpur" class="finale-img">
+      <div class="finale-veil"></div>
     </div>
   </section>
 

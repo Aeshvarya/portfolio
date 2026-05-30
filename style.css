@@ -222,6 +222,32 @@ body.cur-card .cursor-text { opacity:1; }
   50%      { transform:scale(1.12); opacity:1;  }
 }
 
+/* ── Eyes close-up — full-screen opening frame ── */
+.hero-eyes-scene {
+  position:absolute; inset:0; z-index:3;
+  pointer-events:none; overflow:hidden;
+}
+.hero-eyes-img {
+  width:100%; height:100%;
+  object-fit:cover; object-position:center 42%;
+  transform-origin:center center;
+  will-change:transform, opacity;
+}
+.hero-eyes-veil {
+  position:absolute; inset:0;
+  background:
+    linear-gradient(to bottom,
+      rgba(9,11,16,.55) 0%,
+      transparent 22%,
+      transparent 72%,
+      rgba(9,11,16,.85) 100%),
+    linear-gradient(to right,
+      rgba(9,11,16,.25) 0%,
+      transparent 28%,
+      transparent 72%,
+      rgba(9,11,16,.25) 100%);
+}
+
 /* ── Portrait: right-side, full character visible ── */
 .hero-image-wrap {
   position:absolute;
@@ -229,6 +255,7 @@ body.cur-card .cursor-text { opacity:1; }
   width:52%; height:100%;
   z-index:2;
   overflow:hidden;
+  opacity:0;
 }
 .hero-img {
   width:100%; height:100%;
@@ -267,9 +294,9 @@ body.cur-card .cursor-text { opacity:1; }
   color:rgba(0,229,255,.09); pointer-events:none;
 }
 
-/* ── Hero text — z-index above photo ── */
+/* ── Hero text — z-index above photo and eyes scene ── */
 .hero-content {
-  position:relative; z-index:3;
+  position:relative; z-index:5;
   padding:0 clamp(1.5rem,6vw,7rem);
   max-width:52%;
   display:flex; flex-direction:column;
@@ -355,7 +382,7 @@ body.cur-card .cursor-text { opacity:1; }
 /* Scroll indicator */
 .scroll-indicator {
   position:absolute; bottom:2.5rem; right:clamp(1.5rem,6vw,8rem);
-  z-index:3; display:flex; flex-direction:column; align-items:center; gap:.6rem; opacity:0;
+  z-index:5; display:flex; flex-direction:column; align-items:center; gap:.6rem; opacity:0;
 }
 .scroll-indicator span {
   font-family:var(--f-mono); font-size:.5rem; letter-spacing:.42em;
@@ -772,6 +799,41 @@ body.cur-card .cursor-text { opacity:1; }
 .back-to-top:hover { color:var(--primary); border-color:var(--primary); }
 
 @media (max-width:600px) { .footer-content { flex-direction:column; align-items:center; text-align:center; } }
+
+/* ════════════════════════════════════════════
+   FINALE — MOVIE POSTER
+════════════════════════════════════════════ */
+#finale {
+  position:relative;
+  height:200vh;
+}
+
+.finale-sticky {
+  position:sticky; top:0;
+  width:100%; height:100vh;
+  overflow:hidden;
+}
+
+.finale-img {
+  width:100%; height:100%;
+  object-fit:cover;
+  object-position:center top;
+  transform-origin:center center;
+  will-change:transform;
+  display:block;
+}
+
+.finale-veil {
+  position:absolute; inset:0;
+  background:
+    linear-gradient(to bottom,
+      rgba(9,11,16,.35) 0%,
+      transparent 15%,
+      transparent 65%,
+      rgba(9,11,16,.8) 90%,
+      rgba(9,11,16,1) 100%);
+  pointer-events:none;
+}
 
 /* ════════════════════════════════════════════
    SHARED UTILITIES

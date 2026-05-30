@@ -277,8 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
      9. HERO ENTRANCE + SCROLL JOURNEY
   ───────────────────────────────────────────────── */
   function bootHero() {
-    /* After loader clears: just the photo is visible.
-       Text is opacity:0 — it reveals via scroll journey below. */
+    /* After loader clears: eyes.png fills screen.
+       Character and text both start at opacity:0. */
 
     /* Scroll indicator pulses in after a short beat */
     gsap.to('#scrollIndicator', { opacity: .5, duration: 1, delay: .8 });
@@ -294,6 +294,42 @@ document.addEventListener('DOMContentLoaded', () => {
      through the 270vh #hero section. Each step reveals content. */
   function initHeroJourney() {
     const heroEl = document.getElementById('hero');
+
+    /* 0a. Eyes scene: zoom in slightly as it fades — "camera pulling back" */
+    gsap.to('.hero-eyes-img', {
+      scale: 1.14,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroEl,
+        start: 'top top',
+        end: '40% top',
+        scrub: 1.6,
+      },
+    });
+
+    /* 0b. Eyes scene: fade out as you scroll */
+    gsap.to('#heroEyesScene', {
+      opacity: 0,
+      ease: 'power2.in',
+      scrollTrigger: {
+        trigger: heroEl,
+        start: '8% top',
+        end: '40% top',
+        scrub: 1.3,
+      },
+    });
+
+    /* 0c. Character: fades in as eyes fade out */
+    gsap.to('#heroImage', {
+      opacity: 1,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: heroEl,
+        start: '22% top',
+        end: '48% top',
+        scrub: 1.3,
+      },
+    });
 
     /* 1. Photo slow zoom while pinned (whole journey) */
     gsap.to('.hero-img', {
@@ -475,6 +511,21 @@ document.addEventListener('DOMContentLoaded', () => {
       row.addEventListener('mouseenter', () => row.style.animationPlayState = 'paused');
       row.addEventListener('mouseleave', () => row.style.animationPlayState = 'running');
     });
+
+    /* Finale: slow cinematic zoom as movie poster comes into view */
+    gsap.fromTo('.finale-img',
+      { scale: 1 },
+      {
+        scale: 1.07,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#finale',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 2,
+        },
+      }
+    );
   }
 
   /* ─────────────────────────────────────────────────
