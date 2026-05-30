@@ -190,21 +190,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const progBar = document.getElementById('cinProgress');
     const DURATION = 30.667; /* actual video duration in seconds */
 
-    /* ── Scroll → video currentTime (scrub) ── */
-    ScrollTrigger.create({
-      trigger: heroEl,
-      start: 'top top',
-      end: 'bottom bottom',
-      onUpdate(self) {
-        if (!video) return;
-        const target = self.progress * DURATION;
-        /* Only seek if we're more than 1 frame off — avoids micro-stutter */
-        if (Math.abs(video.currentTime - target) > 0.05) {
-          video.currentTime = target;
-        }
-        if (progBar) progBar.style.width = (self.progress * 100) + '%';
-      },
-    });
+    /* ── RAF loop reads lenis.targetScroll (raw, no smooth lag) ── */
+    const heroScrollLen = heroEl.offsetHeight - window.innerHeight;
+
+    (function videoScrubLoop() {
+      requestAnimationFrame(videoScrubLoop);
+      if (!video || !heroScrollLen) return;
+
+      /* lenis.targetScroll is the user's intended position, no easing delay */
+      const rawProgress = Math.max(0, Math.min(1, lenis.targetScroll / heroScrollLen));
+      const target = rawProgress * DURATION;
+
+      if (Math.abs((video.currentTime || 0) - target) > 0.033) {
+        if (video.fastSeek) video.fastSeek(target);
+        else video.currentTime = target;
+      }
+      if (progBar) progBar.style.width = (rawProgress * 100) + '%';
+    })();
 
     /* ── Scene timestamps (% of 500vh hero) ── */
     /* 0 %  → 0s    Scene 1: Eyes                  */
