@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('mouseenter', () => document.body.classList.add('cur-link'));
     el.addEventListener('mouseleave', () => document.body.classList.remove('cur-link'));
   });
-  document.querySelectorAll('.project-row').forEach(r => {
+  document.querySelectorAll('.pc-card').forEach(r => {
     r.addEventListener('mouseenter', () => document.body.classList.add('cur-card'));
     r.addEventListener('mouseleave', () => document.body.classList.remove('cur-card'));
   });
@@ -186,9 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* Kick off scroll animations (includes hero journey) */
     initScroll();
-
-    /* Start role cycling — runs independently */
-    setTimeout(startRoleCycle, 6000);
   }
 
   /* Hero scroll journey — fires at different scroll progress points
@@ -1011,27 +1008,65 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ─────────────────────────────────────────────────
-     14. CONTACT PORTAL ENTRY
+     14. CONTACT FORM — AJAX submit (no redirect)
   ───────────────────────────────────────────────── */
-  (() => {
-    const portal  = document.querySelector('.ct-portal');
-    const ctaWrap = document.querySelector('.ct-cta-wrap');
-    if (!portal) return;
+  const ctForm = document.getElementById('ct-form');
+  if (ctForm) {
+    ctForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn     = ctForm.querySelector('.ct-form-submit');
+      const btnText = btn.querySelector('span');
+      const success = document.getElementById('ct-form-success');
 
-    gsap.set(portal,  { scale: 0.55, opacity: 0 });
-    gsap.set(ctaWrap, { scale: 0.85, opacity: 0 });
+      btn.disabled = true;
+      btnText.textContent = 'SENDING...';
 
-    ScrollTrigger.create({
-      trigger: '#contact',
-      start: 'top 72%',
-      once: true,
-      onEnter() {
-        gsap.timeline()
-          .to(portal,  { scale: 1, opacity: 1, duration: 1.4, ease: 'back.out(1.6)' })
-          .to(ctaWrap, { scale: 1, opacity: 1, duration: 0.75, ease: 'back.out(1.8)' }, '-=0.55');
+      try {
+        const res = await fetch('https://formsubmit.co/ajax/aeshvarya310305@gmail.com', {
+          method : 'POST',
+          headers: { 'Accept': 'application/json' },
+          body   : new FormData(ctForm),
+        });
+        if (!res.ok) throw new Error('server');
+        ctForm.reset();
+        btn.style.display     = 'none';
+        success.style.display = 'block';
+      } catch {
+        btn.disabled        = false;
+        btnText.textContent = 'SEND MESSAGE';
       }
     });
-  })();
+  }
+
+  /* ─────────────────────────────────────────────────
+     15. MOBILE NAV HAMBURGER
+  ───────────────────────────────────────────────── */
+  const navHamburger = document.getElementById('navHamburger');
+  const navMobile    = document.getElementById('navMobile');
+
+  function closeMobileNav() {
+    navHamburger?.classList.remove('open');
+    navMobile?.classList.remove('open');
+    navMobile?.setAttribute('aria-hidden', 'true');
+    navHamburger?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+    lenis.start();
+  }
+  function openMobileNav() {
+    navHamburger?.classList.add('open');
+    navMobile?.classList.add('open');
+    navMobile?.setAttribute('aria-hidden', 'false');
+    navHamburger?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+    lenis.stop();
+  }
+
+  navHamburger?.addEventListener('click', () => {
+    navMobile?.classList.contains('open') ? closeMobileNav() : openMobileNav();
+  });
+  navMobile?.querySelectorAll('.nav-mobile-link').forEach(link => {
+    link.addEventListener('click', closeMobileNav);
+  });
 
   /* ─────────────────────────────────────────────────
      15. RESIZE
@@ -1049,6 +1084,7 @@ document.addEventListener('DOMContentLoaded', () => {
 (function temporalWarp() {
   const canvas = document.getElementById('warp-canvas');
   if (!canvas) return;
+  if (window.innerWidth < 768) { canvas.style.display = 'none'; return; }
   const gl = canvas.getContext('webgl', { antialias: false, powerPreference: 'low-power' });
   if (!gl) return;
 

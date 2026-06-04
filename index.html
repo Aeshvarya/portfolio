@@ -84,11 +84,31 @@
       <a href="#skills"   class="nav-link">Skills</a>
       <a href="#contact"  class="nav-link">Contact</a>
     </div>
-    <a href="#contact" class="nav-cta">
-      <span class="nav-cta-text">Hire Me</span>
-      <span class="nav-cta-arrow">↗</span>
-    </a>
+    <div class="nav-actions">
+      <a href="resume.pdf" download class="nav-resume">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>RÉSUMÉ</span>
+      </a>
+      <a href="#contact" class="nav-cta">
+        <span class="nav-cta-text">Hire Me</span>
+        <span class="nav-cta-arrow">↗</span>
+      </a>
+    </div>
   </nav>
+
+  <!-- Mobile hamburger — fixed, always visible on small screens -->
+  <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- Mobile nav full-screen overlay -->
+  <div class="nav-mobile" id="navMobile" aria-hidden="true">
+    <a href="#about"     class="nav-mobile-link">About</a>
+    <a href="#projects"  class="nav-mobile-link">Work</a>
+    <a href="#skills"    class="nav-mobile-link">Skills</a>
+    <a href="#contact"   class="nav-mobile-link">Contact</a>
+    <a href="resume.pdf" download class="nav-mobile-link nav-mobile-resume">Download CV ↓</a>
+  </div>
 
   <!-- ═══════════════ HERO ═══════════════ -->
   <!-- Tall section — sticky inner creates the scroll journey -->
@@ -208,7 +228,7 @@
           </div>
           <div class="stat-item reveal-up">
             <div class="stat-num" data-count="4">0</div><div class="stat-unit"></div>
-            <div class="stat-label">Projects Built</div>
+            <div class="stat-label">Projects</div>
           </div>
           <div class="stat-item reveal-up">
             <div class="stat-num" data-count="2">0</div><div class="stat-unit"></div>
@@ -689,7 +709,7 @@
         <span class="fl-badge-icon">📺</span>31K+ Subscribers
       </div>
       <div class="fl-badge fl-badge-r2">
-        <span class="fl-badge-icon">🚀</span>4 Projects Shipped
+        <span class="fl-badge-icon">🚀</span>4 Projects Building
       </div>
 
       <!-- Sidebar icon strip (far right, matching original) -->
@@ -748,7 +768,7 @@
           <li class="fl-check">Authentication</li>
           <li class="fl-check">Dashboard</li>
           <li class="fl-check">AI Integrations</li>
-          <li class="fl-check">Deployment</li>
+          <li class="fl-check fl-check--pending">Deployment</li>
         </ul>
       </div>
 
@@ -832,7 +852,7 @@
 
     <!-- RIGHT — contact form -->
     <div class="ct-right">
-      <form class="ct-form reveal-up"
+      <form id="ct-form" class="ct-form reveal-up"
             action="https://formsubmit.co/aeshvarya310305@gmail.com"
             method="POST">
 

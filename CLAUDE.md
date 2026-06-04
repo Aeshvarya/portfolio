@@ -115,3 +115,4 @@ portfolio/
 - VanillaTilt: only applied to `[data-tilt]` element (about image). Data attributes control max angle + glare
 - ScrollTrigger: `ScrollTrigger.refresh()` called on window resize to recalculate trigger offsets
 - The `.reveal-line-inner` wrappers are injected by JS in `revealLines(scopeSelector)` — don't add them manually in HTML
+₹
