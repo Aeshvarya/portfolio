@@ -1168,9 +1168,12 @@ body.cur-card .cursor-text { opacity:1; }
 
 /* ── MOBILE ── */
 @media (max-width:768px) {
-  #contact { grid-template-columns:1fr; padding:5rem clamp(1.5rem,6vw,4rem); }
-  .ct-right { display:none; }
-  .ct-heading { font-size:clamp(4rem,16vw,8rem); }
+  #contact    { grid-template-columns:1fr; padding:4rem 1.5rem 5rem; min-height:auto; }
+  .ct-left    { padding:2rem 0 2.5rem; }
+  .ct-right   { display:flex; padding:0; width:100%; align-items:flex-start; }
+  .ct-solar-wrap { display:none; }
+  .ct-form    { max-width:100%; }
+  .ct-heading { font-size:clamp(3.2rem,13vw,7rem); }
 }
 
 /* ════════════════════════════════════════════
@@ -2099,4 +2102,89 @@ body.cur-card .cursor-text { opacity:1; }
 .fl-check.fl-check--pending::before {
   content:'○';
   color:rgba(255,255,255,.2);
+}
+
+/* ════════════════════════════════════════════
+   COMPREHENSIVE MOBILE / RESPONSIVE OVERRIDES
+   iPhone 16 Pro Max · tablets · all phones
+════════════════════════════════════════════ */
+
+/* ── iOS/Android: prevent font auto-inflation ── */
+html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+
+/* ── Remove tap highlight on touch devices ── */
+@media (hover:none) {
+  * { -webkit-tap-highlight-color:transparent; }
+}
+
+/* ── Safe-area for Dynamic Island / notch ── */
+#navbar {
+  top:max(1.1rem, calc(env(safe-area-inset-top) + .4rem));
+}
+.nav-hamburger {
+  top:max(1.1rem, calc(env(safe-area-inset-top) + .4rem));
+  right:max(1.3rem, calc(env(safe-area-inset-right) + 1.3rem));
+}
+
+/* ── Nav: hide desktop actions on mobile (hamburger handles navigation) ── */
+@media (max-width:768px) {
+  .nav-actions { display:none; }
+}
+
+/* ── Hero: tighter, cleaner text overlay on phones ── */
+@media (max-width:768px) {
+  .hero-index   { display:none; }
+  .cin-text     { padding:0 1.5rem 5rem; }
+  .hero-eyebrow { margin-bottom:1.2rem; }
+  .hero-heading { font-size:clamp(2.4rem,11vw,4.5rem) !important; }
+  .hero-bottom  { margin-top:1.5rem; padding-top:1.2rem; gap:1rem; }
+  .btn-primary,
+  .btn-ghost    { padding:.8rem 1.4rem; }
+}
+
+/* ── About: tighter on small phones ── */
+@media (max-width:600px) {
+  #about { padding:4rem 1.25rem 5rem; }
+  .about-heading { font-size:clamp(2rem,9vw,3.2rem) !important; }
+  .about-stats   { gap:1.1rem; margin-top:2rem; padding-top:2rem; }
+}
+
+/* ── Projects: tinier cards on small phones ── */
+@media (max-width:480px) {
+  .proj-stage { height:440px; }
+  .pc-card    { width:240px; height:370px; }
+  .pc-art     { height:170px; }
+  .projects-header { padding:4rem 1.5rem 2rem; }
+  .projects-footer { padding:2rem 1.5rem; text-align:center; }
+}
+
+/* ── Skills: cap tag overflow + fix iOS viewport height ── */
+@media (max-width:768px) {
+  .cat-tags { max-width:calc(100vw - 3rem); }
+}
+/* svh = "small viewport height" — excludes Safari URL bar, prevents clipping */
+#skills { height:100vh; height:100svh; }
+
+/* ── Finale: fix iOS height + hide cards that overlap portrait on phones ── */
+#finale { height:100vh; height:100svh; }
+
+@media (max-width:600px) {
+  /* Cards are 38vw ≈ 163px; portrait is 36vw ≈ 155px; they collide — hide cards */
+  .fl-card          { display:none; }
+  .fl-portrait-wrap { width:clamp(170px,52vw,240px); }
+  .fl-subtitle-wrap { bottom:7.5rem; }
+  .fl-status-badge  { bottom:4.5rem; }
+}
+
+/* ── Footer on very small phones ── */
+@media (max-width:480px) {
+  #footer { padding:2rem 1.25rem; }
+  .footer-copy { font-size:.5rem; letter-spacing:.12em; }
+}
+
+/* ── Tablet (769–1024px): minor tweaks ── */
+@media (min-width:769px) and (max-width:1024px) {
+  .about-container { gap:3rem; }
+  .about-stats     { grid-template-columns:repeat(2,1fr); }
+  .hero-heading    { font-size:clamp(3rem,8vw,6rem); }
 }
