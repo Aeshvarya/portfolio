@@ -414,7 +414,13 @@ body.cur-card .cursor-text { opacity:1; }
 }
 
 @media (max-width:768px) {
-  #hero { height:350vh; }
+  /* No scroll-scrubbing on mobile — hero is one live-video screen */
+  #hero { height:100vh; height:100svh; }
+  .hero-sticky {
+    position:relative;
+    height:100vh; height:100svh;
+    min-height:0;
+  }
   .cin-text { max-width:100%; padding-bottom:5rem; }
   .hero-heading { font-size:clamp(2.6rem,13vw,5rem); }
   .hero-bottom { flex-direction:column; align-items:flex-start; }

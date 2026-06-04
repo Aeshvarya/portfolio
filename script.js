@@ -196,6 +196,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const progBar = document.getElementById('cinProgress');
     const DURATION = 30.667; /* actual video duration in seconds */
 
+    /* ─────────────────────────────────────────────────
+       MOBILE PATH — iOS Safari won't render currentTime
+       seeks on a paused video, so scroll-scrubbing shows
+       only a frozen poster. Instead: autoplay + loop the
+       video as a live background, reveal text with a
+       normal entrance timeline (not gated on scroll).
+    ───────────────────────────────────────────────── */
+    if (window.innerWidth < 768) {
+      if (video) {
+        video.loop = true;
+        video.muted = true;
+        video.setAttribute('muted', '');
+        video.setAttribute('playsinline', '');
+        const tryPlay = () => { const p = video.play(); if (p) p.catch(() => {}); };
+        tryPlay();
+        /* Retry on first touch in case autoplay was blocked */
+        document.addEventListener('touchstart', tryPlay, { once: true });
+      }
+
+      /* Hide the scrub progress bar — irrelevant when looping */
+      if (progBar && progBar.parentElement) progBar.parentElement.style.display = 'none';
+
+      /* Reveal hero text with a timed entrance */
+      gsap.timeline({ defaults: { ease: 'power3.out' } })
+        .to('#heroEyebrow', { opacity: 1, y: 0, duration: .7 }, 0.25)
+        .to('#heroHeading', {
+          opacity: 1, y: 0, duration: .7,
+          onStart() {
+            document.querySelectorAll('.hero-line').forEach((line, i) => {
+              setTimeout(() => scramble(line, 900), i * 180);
+            });
+          },
+        }, 0.45)
+        .to('#heroBottom', {
+          opacity: 1, y: 0, duration: .7,
+          onComplete() { setTimeout(startRoleCycle, 1400); },
+        }, 0.75);
+
+      return; /* skip the desktop scrub journey entirely */
+    }
+
     /* ── RAF loop: reads lenis.targetScroll (raw, no smooth lag) ── */
     /* heroScrollLen computed lazily so layout is settled before first read */
     let heroScrollLen = 0;
